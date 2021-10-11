@@ -1,0 +1,11 @@
+version: '3'
+services:
+    grafana:
+        image: grafana/grafana-oss
+        restart: always
+        container_name: grafana-server
+        environment:
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_SECURITY_ALLOW_EMBEDDING=true
+        ports:
+            - "3000:3000"
