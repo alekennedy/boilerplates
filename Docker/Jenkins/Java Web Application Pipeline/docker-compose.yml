@@ -1,0 +1,31 @@
+services:
+    dockedind:
+        image: docker:dind
+        restart: always
+        container_name: jenkins-docker
+        privileged: true
+        expose:
+            - 2375
+            - 2376
+        environment:
+            - DOCKER_TLS_CERTDIR: /certs
+        volumes:
+            - /home/jenkins-docker-certs:/certs/client
+            - /home/jenkins-data:/var/jenkins_home
+    jenkins:
+        image: myjenkins-blueocean:1.1
+        container_name: jenkins-blueocean
+        restart: always
+        ports:
+            - "9080:9080"
+            - "50000:50000"
+        environment:
+            - DOCKER_CERT_PATH: /certs/client
+            - DOCKER_HOST: tcp://jenkins-docker:2376
+            - DOCKER_TLS_VERIFY: 1
+            - JENKINS_OPTS: "--httpPort=9080"
+        volumes:
+            - /home/jenkins-data:/var/jenkins_home
+            - /home/jenkins-bluids:/var/jenkins-builds
+            - /home/jenkins-docker-certs:/certs/client:ro
+            - "$HOME":/home
