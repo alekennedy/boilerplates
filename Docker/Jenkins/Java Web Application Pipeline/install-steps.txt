@@ -1,0 +1,16 @@
+docker build -t myjenkins-blueocean:1.1 .
+
+2. Crear directorios
+ mkdir jenkins-data
+ mkdir jenkins-docker-certs
+3. Crear red en docker
+  docker network create jenkins
+2. Lanzar el contenedor Docker:dind
+docker run --name jenkins-docker --detach   --privileged --network jenkins --network-alias docker   --env DOCKER_TLS_CERTDIR=/certs   --volume /home/jenkins-docker-certs:/certs/client   --volume /home/jenkins-data:/var/jenkins_home   --publish 2376:2376 docker:dind --storage-driver overlay2
+
+3. Lanzar el contenedor de jenkins
+docker run --name jenkins-blueocean --detach --network jenkins --env DOCKER_HOST=tcp://docker:2376   --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1  -e JENKINS_OPTS="--httpPort=9080"  --publish 9080:9080 --publish 50000:50000   --volume /home/jenkins-data:/var/jenkins_home --volume /home/sgc-infra:/var/jenkins-builds   --volume /home/jenkins-docker-certs:/certs/client:ro   --volume "$HOME":/home   myjenkins-blueocean:1.1
+
+4. Instalar el plugin ssh-pipeline-steps
+5. Instalar file operation plugin
+5. Definir el pipeline
